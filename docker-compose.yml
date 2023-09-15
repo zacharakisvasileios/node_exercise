@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 services:
   api:
     container_name: node_assignment
@@ -6,23 +6,28 @@ services:
     build: .
     ports:
       - "3000:3000"
+    environment:
+      - PG_HOST=postgres_db
+      - PG_DB=pccw_db
+      - PG_USER=pccw_user
+      - PG_PASSWORD=pccw_password
     depends_on:
       - postgres_db
     volumes:
-    - .:/usr/src/app
-    - /usr/src/app/node_modules
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
 
   postgres_db:
     container_name: postgres_db
     image: postgres
     ports:
-      - '5433:${DB_PORT}'
+      - "5433:${DB_PORT}"
     volumes:
       - data:/data/db
     environment:
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_DB=pccw_db
+      - POSTGRES_USER=pccw_user
+      - POSTGRES_PASSWORD=pccw_password
 
-volumes: 
- data: {}
+volumes:
+  data: {}
