@@ -7,10 +7,6 @@ require("dotenv").config();
 exports.feedDB = (req, res, next) => {
   // Try parse the seed file, if seed file missing, return 500
   try {
-    // If no users and messages in the seed file, return 404
-    if (!sheets.Sheets || !sheets.SheetNames.includes("messages", "users"))
-      return res.status(404).json("Missing data in seed file");
-
     // Different time formats presented with the same way in seed file
     const sheets = XLSX.readFile(process.env.SEED_FILE, {
       // Number formats and values are attached to cells. The following keys are used:
@@ -20,6 +16,10 @@ exports.feedDB = (req, res, next) => {
       // Setting cellDates to true will force the parsers to store dates: 2048-10-06T00:00:00.000Z
       cellDates: true,
     });
+
+    // If no users and messages in the seed file, return 404
+    if (!sheets.Sheets || !sheets.SheetNames.includes("messages", "users"))
+      return res.status(404).json("Missing data in seed file");
 
     const users = XLSX.utils.sheet_to_json(sheets.Sheets["users"], {
       // By default, sheet_to_json scans the first row and uses the values as headers.
