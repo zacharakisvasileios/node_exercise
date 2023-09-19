@@ -4,6 +4,15 @@ exports.getUsers = (req, res, next) => {
   console.log("here");
 };
 
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.findAll();
+    return res.status(200).json(users);
+  } catch (error) {
+    res.json({ message: error.message });
+  }
+};
+
 exports.getUserMessageExchange = (req, res, next) => {
   const userId = req.params.userId;
   User.findByPk(userId)
