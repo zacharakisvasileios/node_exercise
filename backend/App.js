@@ -3,9 +3,9 @@ const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const app = express();
-const messageRoute = require("./routes/messages");
-const userRoute = require("./routes/users");
+const routes = require("./routes/routes");
 const sequelize = require("./util/database");
+require("dotenv").config();
 
 app.use(
   morgan("dev", {
@@ -33,24 +33,8 @@ app.use((req, res, next) => {
   }
   next(); // Go to next middleware
 });
-/*
-app.use((req, res, next) => {
-  const error = new Error("No route was found for this request!");
-  error.status = 404;
-  next(error);
-});
 
-app.use((error, req, res, next) => {
-  res.status(error.status || 500);
-  res.json({
-    error: {
-      message: error.message,
-    },
-  });
-});*/
-
-app.use("/message", messageRoute);
-app.use("/user", userRoute);
+app.use("/", routes);
 
 //test route
 app.get("/", (req, res, next) => {
@@ -70,7 +54,7 @@ sequelize
   .sync()
   .then((result) => {
     console.log("Database connected");
-    app.listen(8080);
+    app.listen(process.env.SERVER_PORT);
   })
   .catch((err) => console.log(err));
 

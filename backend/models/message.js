@@ -12,7 +12,7 @@ const Message = db.define("message", {
   sender: Sequelize.INTEGER,
   receiver: Sequelize.INTEGER,
   seen: Sequelize.BOOLEAN,
-  timestampSent: Sequelize.DATE,
+  timestampSent: Sequelize.STRING,
 });
 
 module.exports = Message;

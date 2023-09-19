@@ -4,7 +4,7 @@ require("dotenv").config();
 
 // Parse seed file using xslx, convert to JSON and then use
 // sequelize bulk insert to populate the db
-exports.feedDB = (req, res, next) => {
+exports.feedDB = (req, res) => {
   // Try parse the seed file, if seed file missing, return 500
   try {
     // Different time formats presented with the same way in seed file
@@ -35,25 +35,46 @@ exports.feedDB = (req, res, next) => {
       dateNF: "yyyy-mm-dd hh:mm:ss",
       raw: false,
     });
-    return res.status(200).json(users);
-  } catch ({ name, message }) {
-    //TODO more specific error handling?
-    return res.status(500).json(message);
+    return messages;
+    /*Message.bulkCreate(messages).then(() => { // Notice: There are no arguments here, as of right now you'll have to...
+      return Message.findAll();
+    }).then(storedMessages => {
+      console.log(storedMessages) // ... in order to get the array of user objects
+    })*/
+  } catch ({ message }) {
+    return res.json(message);
   }
 };
 
-exports.createMessage = (req, res, next) => {
-  const userId = req.params.userId;
-  Message.findByPk(userId)
-    .then((user) => {
-      if (!user) {
-        return res.status(404).json({ message: "User not found!" });
-      }
-      res.status(200).json({ user: user });
-    })
-    .catch((err) => console.log(err));
+exports.createMessage = async (req, res) => {
+  try {
+    await Message.create({
+      content: req.body.content,
+      sender: req.body.sender,
+      receiver: req.body.receiver,
+      seen: req.body.seen,
+      timestampSent: req.body.timestampSent,
+    });
+    res.json({
+      message: "Message created successfully",
+    });
+  } catch (error) {
+    res.json({ message: error.message });
+  }
 };
 
 exports.updateMessage = (req, res, next) => {};
 
-exports.getMessages = (req, res, next) => {};
+exports.getAllMessages = async (req, res) => {
+  try {
+    const messages = await Message.findAll();
+    return res.status(200).json(messages);
+  } catch (error) {
+    res.json({ message: error.message });
+  }
+};
+
+exports.deleteAllMessages = async (_, res) => {
+  await Message.sync({ force: true });
+  return res.status(200).json("All messages have been successfully deleted");
+};
