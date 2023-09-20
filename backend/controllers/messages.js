@@ -1,6 +1,8 @@
 const Message = require("../models/message");
 const User = require("../models/user");
 const XLSX = require("xlsx");
+const db = require("../util/database");
+const { Op, QueryTypes } = require("sequelize");
 require("dotenv").config();
 
 // Parse seed file using xslx, convert to JSON and then use
@@ -62,6 +64,9 @@ exports.feedDB = async (req, res) => {
       })
       .then((users) => {
         return res.json("Database populated successfully");
+      })
+      .catch((e) => {
+        return res.json(e.message);
       });
   } catch ({ message }) {
     return res.json(message);
@@ -70,7 +75,16 @@ exports.feedDB = async (req, res) => {
 
 exports.createMessage = async (req, res) => {
   try {
+    // we have already inserted data, Message.create will use id: 1 and cause validation
+    // error. Since no nextval() exists in sequelize, raw query instead to get maximum
+    // value of id
+    const id = await db.query('SELECT MAX(id) + 1 FROM "messages"', {
+      type: QueryTypes.SELECT,
+    });
+    // Temporary fis, result is wrapped in questionmarks
+    // TODO check why
     await Message.create({
+      id: id[0]["?column?"],
       content: req.body.content,
       sender: req.body.sender,
       receiver: req.body.receiver,
@@ -85,11 +99,55 @@ exports.createMessage = async (req, res) => {
   }
 };
 
-exports.updateMessage = (req, res, next) => {};
-
-exports.getAllMessages = async (req, res) => {
+exports.updateMessage = async (req, res, next) => {
   try {
-    const messages = await Message.findAll();
+    // Validate data also in FE
+    // TODO use joi or express-validator
+    await Message.update(req.body, {
+      where: { id: req.params.id },
+    });
+    res.json({
+      message: "Message updated succesfully",
+    });
+  } catch (error) {
+    res.json({ message: error.message });
+  }
+};
+
+// Number of parameters may vary, so we check for params
+// and then construct the query. For sake of simplicity
+// and since it covers our frontend needs, we only use eq
+exports.getMessages = async (req, res) => {
+  try {
+    let searchStr = {};
+    if (req.body.id) {
+      searchStr.id = {
+        [Op.eq]: `${req.body.id}`,
+      };
+    }
+    if (req.body.content) {
+      searchStr.content = {
+        [Op.eq]: `${req.body.content}`,
+      };
+    }
+    if (req.body.sender) {
+      searchStr.sender = {
+        [Op.eq]: `${req.body.sender}`,
+      };
+    }
+    if (req.body.receiver) {
+      searchStr.receiver = {
+        [Op.eq]: `${req.body.receiver}`,
+      };
+    }
+    if (req.body.seen) {
+      searchStr.seen = {
+        [Op.eq]: `${req.body.seen}`,
+      };
+    }
+    const messages = await Message.findAll({
+      where: searchStr,
+    });
     return res.status(200).json(messages);
   } catch (error) {
     res.json({ message: error.message });

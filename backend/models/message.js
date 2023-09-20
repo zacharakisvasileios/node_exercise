@@ -7,6 +7,8 @@ const Message = db.define("message", {
     autoIncrement: true,
     allowNull: false,
     primaryKey: true,
+    unique: true,
+    noUpdate: true,
   },
   content: Sequelize.STRING,
   sender: Sequelize.INTEGER,

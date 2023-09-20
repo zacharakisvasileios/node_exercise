@@ -7,6 +7,8 @@ const User = db.define("user", {
     autoIncrement: true,
     allowNull: false,
     primaryKey: true,
+    unique: true,
+    noUpdate: true,
   },
   firstName: Sequelize.STRING,
   surname: Sequelize.STRING,
