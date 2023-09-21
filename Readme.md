@@ -17,7 +17,7 @@ The endpoints implemented are the following.
 | `POST` | `/message/create`            | Create a new message.                                                                             |
 | `PUT`  | `/message/update/28`         | Update message #28 based on body params(see message model)                                        |
 | `GET`  | `/message/get`               | Gets message(s) based on body params (see message model)                                          |
-| `POST` | `/message/clear`             | Deletes all messages.                                                                             |
+| `POST` | `/message/clear`             | Deletes all messages, not in the scope of the project, for development only                       |
 | `GET`  | `/user/`                     | Get user(s) based on body params (see message model)                                              |
 | `GET`  | `/user/get/message`          | Gets messages between user A and B, ordered by the most recent one                                |
 | `GET`  | `/user/get/conversationList` |                                                                                                   |

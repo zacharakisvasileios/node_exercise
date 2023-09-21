@@ -84,17 +84,55 @@ exports.getUserConversationList = (req, res, next) => {
     return res.status(400).json({ message: "User id missing!" });
   const userId = req.body.userId;
   try {
+    // Get all messages where the user is either sender or receiver
     Message.findAll({
       where: {
         [Op.or]: [{ sender: userId }, { receiver: userId }],
       },
+      // sender and receiver ids suffice for our needs
+      attributes: ["sender", "receiver"],
+      // TODO should be ASC later on, since it is pushed to our array
+      order: [["timestampSent", "DESC"]],
+    })
+      .then(async (messages) => {
+        // iterate the array of sender and receivers and exclude the requested user id
+        var tempDialogIds = [];
+        for (var i = 0; i < messages.length; i++) {
+          if (messages[i].receiver === parseInt(userId))
+            tempDialogIds.push(messages[i].sender);
+          else if (messages[i].sender === parseInt(userId)) {
+            tempDialogIds.push(messages[i].receiver);
+          }
+        }
+        // remove duplicates
+        const dialogIds = [...new Set(tempDialogIds)];
+        return res.status(200).json(dialogIds);
+      })
+      .catch((err) => console.log(err));
+  } catch (error) {
+    res.json({ message: error.message });
+  }
+};
+
+//TODO remove, only for test needs
+exports.getUserConversationListMessages = (req, res, next) => {
+  if (!req.body.userId)
+    return res.status(400).json({ message: "User id missing!" });
+  const userId = req.body.userId;
+  try {
+    // Get all messages where the user is either sender or receiver
+    Message.findAll({
+      where: {
+        [Op.or]: [{ sender: userId }, { receiver: userId }],
+      },
+      // sender and receiver ids suffice for our needs
       attributes: ["sender", "receiver"],
       order: [["timestampSent", "DESC"]],
     })
       .then((messages) => {
         res.status(200).json(messages);
       })
-      .catch((err) => console.log(messages));
+      .catch((err) => console.log(err));
   } catch (error) {
     res.json({ message: error.message });
   }

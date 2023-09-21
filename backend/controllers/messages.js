@@ -62,7 +62,7 @@ exports.feedDB = async (req, res) => {
       .then(() => {
         User.bulkCreate(users);
       })
-      .then((users) => {
+      .then(() => {
         return res.json("Database populated successfully");
       })
       .catch((e) => {
@@ -99,7 +99,7 @@ exports.createMessage = async (req, res) => {
   }
 };
 
-exports.updateMessage = async (req, res, next) => {
+exports.updateMessage = async (req, res) => {
   try {
     // Validate data also in FE
     // TODO use joi or express-validator
@@ -154,6 +154,7 @@ exports.getMessages = async (req, res) => {
   }
 };
 
+// utility function used for development
 exports.deleteAllMessages = async (_, res) => {
   await Message.sync({ force: true });
   return res.status(200).json("All messages have been successfully deleted");
