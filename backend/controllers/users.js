@@ -48,35 +48,49 @@ exports.getUsers = async (req, res) => {
 };
 
 exports.getUserMessages = (req, res, next) => {
-  // Check for both users in request body
   if (!req.body.userA)
     return res.status(400).json({ message: "First user missing!" });
   if (!req.body.userB)
     return res.status(400).json({ message: "Second user missing!" });
-  const userA = req.body.userA;
-  const userB = req.body.userB;
-  Message.findAll({
-    where: {
-      // We need to combine Op.or and Op.and to check for multiple clauses
-      [Op.or]: [
-        {
-          [Op.and]: [{ sender: userA }, { receiver: userB }],
-        },
-        {
-          [Op.and]: [{ sender: userB }, { receiver: userA }],
-        },
-      ],
-    },
-    // get the most recent one first
-    order: [["timestampSent", "DESC"]],
-  })
-    .then((messages) => {
-      res.status(200).json(messages);
+  try {
+    const userA = req.body.userA;
+    const userB = req.body.userB;
+    Message.findAll({
+      where: {
+        // We need to combine Op.or and Op.and to check for multiple clauses
+        [Op.or]: [
+          {
+            [Op.and]: [{ sender: userA }, { receiver: userB }],
+          },
+          {
+            [Op.and]: [{ sender: userB }, { receiver: userA }],
+          },
+        ],
+      },
+      // get the most recent one first
+      order: [["timestampSent", "DESC"]],
     })
-    .catch((err) => console.log(err));
+      .then((messages) => {
+        res.status(200).json(messages);
+      })
+      .catch((err) => console.log(err));
+  } catch (error) {
+    res.json({ message: error.message });
+  }
 };
 
 exports.getUserConversationList = (req, res, next) => {
   if (!req.body.userId)
     return res.status(400).json({ message: "User id missing!" });
+  const userId = req.body.userId;
+  try {
+    Post.findAll({
+      where: {
+        [Op.or]: [{ sender: userId }, { receiver: userId }],
+      },
+      order: [["timestampSent", "DESC"]],
+    });
+  } catch (error) {
+    res.json({ message: error.message });
+  }
 };

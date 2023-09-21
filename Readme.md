@@ -22,13 +22,13 @@ The endpoints implemented are the following.
 | `GET`  | `/user/get/message`          | Gets messages between user A and B, ordered by the most recent one                                |
 | `GET`  | `/user/get/conversationList` |                                                                                                   |
 
-- As a convention, /message/create works only if called after /feedDB or without calling /feedDB at all. If /feedDB is called after a single message is
+- It is assumed that /message/create works only if called after /feedDB or without calling /feedDB at all. If /feedDB is called after a single message is
   created, a validation error occurs since there would be duplicate ids.
 - In /message/create the request body should have content, sender, receiver and seen.
 - In /message/get any of the properties specified in the model can be used. If none, all messages are returned.
 - In /message/update/:id, all properties can be updated except for the id
 - In /user/get any of the properties specified in the model can be used. If none, all users are returned.
-- In /user/get/message, userA and userB ids must be provided in the request body
+- In /user/get/message, userA and userB ids must be provided in the request body (req.body.userA, req.body.userB)
 
 # Models
 
