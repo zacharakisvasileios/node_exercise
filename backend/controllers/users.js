@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const Message = require("../models/message");
 const { Op } = require("sequelize");
 
 // Number of parameters may vary, so we check for params
@@ -46,33 +47,36 @@ exports.getUsers = async (req, res) => {
   }
 };
 
-exports.getUserMessageExchange = (req, res, next) => {
-  const userId = req.params.userId;
-  User.findByPk(userId)
-    .then((user) => {
-      if (!user) {
-        return res.status(404).json({ message: "User not found!" });
-      }
-      res.status(200).json({ user: user });
+exports.getUserMessages = (req, res, next) => {
+  // Check for both users in request body
+  if (!req.body.userA)
+    return res.status(400).json({ message: "First user missing!" });
+  if (!req.body.userB)
+    return res.status(400).json({ message: "Second user missing!" });
+  const userA = req.body.userA;
+  const userB = req.body.userB;
+  Message.findAll({
+    where: {
+      // We need to combine Op.or and Op.and to check for multiple clauses
+      [Op.or]: [
+        {
+          [Op.and]: [{ sender: userA }, { receiver: userB }],
+        },
+        {
+          [Op.and]: [{ sender: userB }, { receiver: userA }],
+        },
+      ],
+    },
+    // get the most recent one first
+    order: [["timestampSent", "DESC"]],
+  })
+    .then((messages) => {
+      res.status(200).json(messages);
     })
     .catch((err) => console.log(err));
 };
 
 exports.getUserConversationList = (req, res, next) => {
-  const name = req.body.name;
-  const email = req.body.email;
-  User.create({
-    name: name,
-    email: email,
-  })
-    .then((result) => {
-      console.log("Created User");
-      res.status(201).json({
-        message: "User created successfully!",
-        user: result,
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  if (!req.body.userId)
+    return res.status(400).json({ message: "User id missing!" });
 };

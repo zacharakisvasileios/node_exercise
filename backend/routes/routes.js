@@ -8,9 +8,8 @@ router.put("/message/update/:id", messageController.updateMessage);
 router.get("/message", messageController.getMessages);
 router.post("/message/clear", messageController.deleteAllMessages);
 
-// CRUD Routes /users
 router.get("/user", userController.getUsers);
-router.get("/user//messageExchange", userController.getUserMessageExchange);
+router.get("/user/messages", userController.getUserMessages);
 router.get("/user/conversationList", userController.getUserConversationList);
 
 module.exports = router;
