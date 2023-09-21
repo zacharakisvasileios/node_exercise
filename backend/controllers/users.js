@@ -84,12 +84,17 @@ exports.getUserConversationList = (req, res, next) => {
     return res.status(400).json({ message: "User id missing!" });
   const userId = req.body.userId;
   try {
-    Post.findAll({
+    Message.findAll({
       where: {
         [Op.or]: [{ sender: userId }, { receiver: userId }],
       },
+      attributes: ["sender", "receiver"],
       order: [["timestampSent", "DESC"]],
-    });
+    })
+      .then((messages) => {
+        res.status(200).json(messages);
+      })
+      .catch((err) => console.log(messages));
   } catch (error) {
     res.json({ message: error.message });
   }
