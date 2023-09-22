@@ -51,6 +51,12 @@ const ShowMessagesComponent = () => {
 
   const columns = [
     {
+      title: "Id",
+      dataIndex: "id",
+      key: "id",
+      sorter: (a, b) => a.id - b.id,
+    },
+    {
       title: "Content",
       dataIndex: "content",
       key: "content",
@@ -95,6 +101,8 @@ const ShowMessagesComponent = () => {
         rowKey={(messages) => messages.id}
         dataSource={messages}
         columns={columns}
+        bordered
+        title={() => "Messages"}
       ></Table>
       <UpdateMessage
         visible={isUpdateModalVisibleTrue}
