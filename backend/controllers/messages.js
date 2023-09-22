@@ -120,29 +120,29 @@ exports.updateMessage = async (req, res) => {
 exports.getMessages = async (req, res) => {
   try {
     let searchStr = {};
-    if (req.body.id) {
+    if (req.query.id) {
       searchStr.id = {
-        [Op.eq]: `${req.body.id}`,
+        [Op.eq]: `${req.query.id}`,
       };
     }
-    if (req.body.content) {
+    if (req.query.content) {
       searchStr.content = {
-        [Op.eq]: `${req.body.content}`,
+        [Op.eq]: `${req.query.content}`,
       };
     }
-    if (req.body.sender) {
+    if (req.query.sender) {
       searchStr.sender = {
-        [Op.eq]: `${req.body.sender}`,
+        [Op.eq]: `${req.query.sender}`,
       };
     }
-    if (req.body.receiver) {
+    if (req.query.receiver) {
       searchStr.receiver = {
-        [Op.eq]: `${req.body.receiver}`,
+        [Op.eq]: `${req.query.receiver}`,
       };
     }
-    if (req.body.seen) {
+    if (req.query.seen) {
       searchStr.seen = {
-        [Op.eq]: `${req.body.seen}`,
+        [Op.eq]: `${req.query.seen}`,
       };
     }
     const messages = await Message.findAll({

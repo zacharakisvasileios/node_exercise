@@ -16,19 +16,20 @@ The endpoints implemented are the following.
 | `POST` | `/feedDB`                    | Populates tables. Throws validation error if already called with another file containing same ids |
 | `POST` | `/message/create`            | Create a new message.                                                                             |
 | `PUT`  | `/message/update/28`         | Update message #28 based on body params(see message model)                                        |
-| `GET`  | `/message/get`               | Gets message(s) based on body params (see message model)                                          |
+| `GET`  | `/message/get`               | Gets message(s) based on query params (see message model)                                         |
 | `POST` | `/message/clear`             | Deletes all messages, not in the scope of the project, for development only                       |
-| `GET`  | `/user/`                     | Get user(s) based on body params (see message model)                                              |
+| `GET`  | `/user/`                     | Get user(s) based on query params (see message model)                                             |
 | `GET`  | `/user/get/message`          | Gets messages between user A and B, ordered by the most recent one                                |
 | `GET`  | `/user/get/conversationList` |                                                                                                   |
 
 - It is assumed that /message/create works only if called after /feedDB or without calling /feedDB at all. If /feedDB is called after a single message is
   created, a validation error occurs since there would be duplicate ids.
 - In /message/create the request body should have content, sender, receiver and seen.
-- In /message/get any of the properties specified in the model can be used. If none, all messages are returned.
+- In /message/get any of the properties specified in the model can be used as query params. If none, all messages are returned.
 - In /message/update/:id, all properties can be updated except for the id
-- In /user/get any of the properties specified in the model can be used. If none, all users are returned.
-- In /user/get/message, userA and userB ids must be provided in the request body (req.body.userA, req.body.userB)
+- In /user/get any of the properties specified in the model can be used as query params. If none, all users are returned. First name,
+  surname, sex and username can be searched for case insensitive.
+- In /user/get/message, userA and userB ids must be provided in the request query params (req.query.userA, req.query.userB)
 
 # Models
 

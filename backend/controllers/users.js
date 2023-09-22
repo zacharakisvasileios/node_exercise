@@ -8,34 +8,34 @@ const { Op } = require("sequelize");
 exports.getUsers = async (req, res) => {
   try {
     let searchStr = {};
-    if (req.body.id) {
+    if (req.query.id) {
       searchStr.id = {
-        [Op.eq]: `${req.body.id}`,
+        [Op.eq]: `${req.query.id}`,
       };
     }
-    if (req.body.firstName) {
+    if (req.query.firstName) {
       searchStr.firstName = {
-        [Op.eq]: `${req.body.firstName}`,
+        [Op.iLike]: `${req.query.firstName}`,
       };
     }
-    if (req.body.surname) {
+    if (req.query.surname) {
       searchStr.surname = {
-        [Op.eq]: `${req.body.surname}`,
+        [Op.iLike]: `${req.query.surname}`,
       };
     }
-    if (req.body.dateOfBirth) {
+    if (req.query.dateOfBirth) {
       searchStr.dateOfBirth = {
-        [Op.eq]: `${req.body.dateOfBirth}`,
+        [Op.eq]: `${req.query.dateOfBirth}`,
       };
     }
-    if (req.body.sex) {
+    if (req.query.sex) {
       searchStr.sex = {
-        [Op.eq]: `${req.body.sex}`,
+        [Op.iLike]: `${req.query.sex}`,
       };
     }
-    if (req.body.username) {
+    if (req.query.username) {
       searchStr.username = {
-        [Op.eq]: `${req.body.username}`,
+        [Op.iLike]: `${req.query.username}`,
       };
     }
     const users = await User.findAll({
@@ -48,13 +48,13 @@ exports.getUsers = async (req, res) => {
 };
 
 exports.getUserMessages = (req, res, next) => {
-  if (!req.body.userA)
+  if (!req.query.userA)
     return res.status(400).json({ message: "First user missing!" });
-  if (!req.body.userB)
+  if (!req.query.userB)
     return res.status(400).json({ message: "Second user missing!" });
   try {
-    const userA = req.body.userA;
-    const userB = req.body.userB;
+    const userA = req.query.userA;
+    const userB = req.query.userB;
     Message.findAll({
       where: {
         // We need to combine Op.or and Op.and to check for multiple clauses
@@ -80,9 +80,9 @@ exports.getUserMessages = (req, res, next) => {
 };
 
 exports.getUserConversationList = (req, res, next) => {
-  if (!req.body.userId)
+  if (!req.query.userId)
     return res.status(400).json({ message: "User id missing!" });
-  const userId = req.body.userId;
+  const userId = req.query.userId;
   try {
     // Get all messages where the user is either sender or receiver
     Message.findAll({

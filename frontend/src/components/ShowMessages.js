@@ -1,12 +1,15 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
-//import { Link } from "react-router-dom";
-import { Space, Table } from "antd";
+import { Space, Table, message } from "antd";
+import UpdateMessage from "./modals/UpdateMessage";
 
 const SERVER_URI = "http://localhost:8080";
 
 const ShowMessagesComponent = () => {
   const [messages, setMessages] = useState([]);
+  const [currentMessage, setCurrentMessage] = useState(0);
+  const [isUpdateModalVisibleTrue, setUpdateModalVisibleTrue] = useState(false);
+
   useEffect(() => {
     getMessages();
   }, []);
@@ -14,6 +17,36 @@ const ShowMessagesComponent = () => {
   const getMessages = async () => {
     const res = await axios.get(`${SERVER_URI}/message`);
     setMessages(res.data);
+  };
+
+  const updateMessage = async (id) => {
+    const res = await axios.get(`${SERVER_URI}/message`, {
+      params: { id: id },
+    });
+    setCurrentMessage(res.data[0]);
+    setUpdateModalVisibleTrue(true);
+  };
+
+  const updateData = (id, formValues) => {
+    axios
+      .put(`${SERVER_URI}/message/update/${id}`, {
+        content: formValues.content,
+        sender: formValues.sender,
+        receiver: formValues.receiver,
+        seen: formValues.seen,
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          // close modal, show success message
+          setUpdateModalVisibleTrue(false);
+          getMessages();
+          message.success("Message updated successfully");
+        }
+      })
+      .catch((error) => {
+        setUpdateModalVisibleTrue(false);
+        message.error(error.message);
+      });
   };
 
   const columns = [
@@ -45,12 +78,11 @@ const ShowMessagesComponent = () => {
     },
     {
       title: "Action",
-      dataIndex: "timestampSent",
       key: "action",
-      render: () => (
+      render: (_, record) => (
         <Space size="middle">
-          <a href="/#" onClick={() => console.log("on click")}>
-            Update{" "}
+          <a href="/#" onClick={() => updateMessage(record.id)}>
+            Update message {record.id}
           </a>
         </Space>
       ),
@@ -58,11 +90,19 @@ const ShowMessagesComponent = () => {
   ];
 
   return (
-    <Table
-      rowKey={(messages) => messages.id}
-      dataSource={messages}
-      columns={columns}
-    ></Table>
+    <>
+      <Table
+        rowKey={(messages) => messages.id}
+        dataSource={messages}
+        columns={columns}
+      ></Table>
+      <UpdateMessage
+        visible={isUpdateModalVisibleTrue}
+        setVisible={setUpdateModalVisibleTrue}
+        updateData={updateData}
+        editedMessage={currentMessage}
+      />
+    </>
   );
 };
 
