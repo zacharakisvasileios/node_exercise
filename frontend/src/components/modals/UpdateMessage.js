@@ -1,9 +1,10 @@
 import React from "react";
-import { Modal, Form, Input } from "antd";
+import { Modal, Form, Input, Switch } from "antd";
 
 const UpdateMessage = ({ visible, setVisible, editedMessage, updateData }) => {
   const [form] = Form.useForm();
   const onFinish = (formValues) => {
+    console.log(formValues);
     updateData(editedMessage.id, formValues);
   };
 
@@ -36,6 +37,12 @@ const UpdateMessage = ({ visible, setVisible, editedMessage, updateData }) => {
               name="content"
               label="Content"
               initialValue={editedMessage.content}
+              rules={[
+                {
+                  required: true,
+                  message: "Please specify the message",
+                },
+              ]}
             >
               <Input />
             </Form.Item>
@@ -43,6 +50,13 @@ const UpdateMessage = ({ visible, setVisible, editedMessage, updateData }) => {
               name="sender"
               label="Sender"
               initialValue={editedMessage.sender}
+              rules={[
+                {
+                  required: true,
+                  message: "Sender id must be specified",
+                  pattern: new RegExp(/^[0-9]+$/),
+                },
+              ]}
             >
               <Input />
             </Form.Item>
@@ -50,22 +64,32 @@ const UpdateMessage = ({ visible, setVisible, editedMessage, updateData }) => {
               name="receiver"
               label="Receiver"
               initialValue={editedMessage.receiver}
+              rules={[
+                {
+                  required: true,
+                  message: "Receiver id must be specified",
+                  pattern: new RegExp(/^[0-9]+$/),
+                },
+              ]}
             >
               <Input />
             </Form.Item>
-            <Form.Item
-              name="seen"
-              label="Seen"
-              initialValue={editedMessage.seen}
-            >
-              <Input />
-            </Form.Item>
+            <div className="d-flex justify-content-between mb-4">
+              <span>Seen</span>
+              <Form.Item name="seen" label="Seen" noStyle>
+                <Switch
+                  checkedChildren="Yes"
+                  unCheckedChildren="No"
+                  defaultChecked={editedMessage.seen}
+                />
+              </Form.Item>
+            </div>
             <Form.Item
               name="timestampSent"
               label="Timestamp sent"
               initialValue={editedMessage.timestampSent}
             >
-              <Input />
+              <Input disabled />
             </Form.Item>
           </div>
         </Form>
