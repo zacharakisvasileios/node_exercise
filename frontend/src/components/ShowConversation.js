@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Table, Empty, Result, message } from "antd";
 import { useParams } from "react-router-dom";
 
@@ -10,14 +10,8 @@ const ShowConversationComponent = () => {
   // it is actually userA and userB
   let { sender, receiver } = useParams();
   const [error, setError] = useState(false);
-  console.log("sender", sender);
-  console.log("receiver", receiver);
 
-  useEffect(() => {
-    findConversation();
-  }, []);
-
-  const findConversation = async () => {
+  const findConversation = useCallback(() => {
     axios
       .get(`${SERVER_URI}/user/messages/${sender}/${receiver}`)
       .then((res) => {
@@ -31,7 +25,11 @@ const ShowConversationComponent = () => {
         message.error(error.message);
         setError(true);
       });
-  };
+  }, [sender, receiver]);
+
+  useEffect(() => {
+    findConversation();
+  }, [findConversation]);
   // Duplicate code with Show messages
   // Should be implemented with search function in antd table
 

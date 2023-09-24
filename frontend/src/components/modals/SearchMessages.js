@@ -31,7 +31,7 @@ const SearchMessages = ({
         <Form
           form={form}
           preserve={false}
-          name="Please specify sender and receiver id"
+          name="SearchMessages"
           width={"350px"}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
@@ -40,7 +40,7 @@ const SearchMessages = ({
           <div className="">
             <Form.Item
               name="sender"
-              label="Sender"
+              label="First used id"
               rules={[
                 {
                   required: true,
@@ -53,7 +53,7 @@ const SearchMessages = ({
             </Form.Item>
             <Form.Item
               name="receiver"
-              label="Receiver"
+              label="Second user id"
               rules={[
                 {
                   required: true,
