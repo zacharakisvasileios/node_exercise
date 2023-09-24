@@ -1,7 +1,7 @@
 import "./App.css";
 
 import ShowMessagesComponent from "./components/ShowMessages";
-import CreateMessagesComponent from "./components/CreateMessages";
+import ShowConversationComponent from "./components/ShowConversation";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -11,7 +11,10 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<ShowMessagesComponent />} />
-          <Route path="/create" element={<CreateMessagesComponent />} />
+          <Route
+            path="/showMessages/:sender/:receiver"
+            element={<ShowConversationComponent />}
+          />
         </Routes>
       </BrowserRouter>
     </div>

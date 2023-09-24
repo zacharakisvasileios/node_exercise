@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Space, Table, Button, Empty, Result, message } from "antd";
 import UpdateMessage from "./modals/UpdateMessage";
 import CreateMessage from "./modals/CreateMessage";
+import SearchMessages from "./modals/SearchMessages";
 import { dateInYyyyMmDdHhMmSs } from "../util";
 
 const SERVER_URI = "http://localhost:8080";
@@ -13,6 +14,8 @@ const ShowMessagesComponent = () => {
   const [currentMessage, setCurrentMessage] = useState(0);
   const [isUpdateModalVisible, setUpdateModalVisible] = useState(false);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
+  const [isSearchMessagesModalVisible, setIsSearchMessagesModalVisible] =
+    useState(false);
 
   useEffect(() => {
     getMessages();
@@ -197,6 +200,24 @@ const ShowMessagesComponent = () => {
       )}
       {messages.length !== 0 && !error && (
         <>
+          <div className="d-flex justify-content-around mt-4 mb-4">
+            <Button
+              type="primary"
+              onClick={() => {
+                setIsCreateModalVisible(true);
+              }}
+            >
+              Create a new message
+            </Button>
+            <Button
+              type="primary"
+              onClick={() => {
+                setIsSearchMessagesModalVisible(true);
+              }}
+            >
+              Search for conversation
+            </Button>
+          </div>
           <Table
             rowKey={(messages) => messages.id}
             dataSource={messages}
@@ -214,6 +235,10 @@ const ShowMessagesComponent = () => {
             isCreateModalVisible={isCreateModalVisible}
             setIsCreateModalVisible={setIsCreateModalVisible}
             createNewMessage={createNewMessage}
+          />
+          <SearchMessages
+            isSearchMessagesModalVisible={isSearchMessagesModalVisible}
+            setIsSearchMessagesModalVisible={setIsSearchMessagesModalVisible}
           />
         </>
       )}

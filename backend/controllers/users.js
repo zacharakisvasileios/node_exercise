@@ -48,13 +48,13 @@ exports.getUsers = async (req, res) => {
 };
 
 exports.getUserMessages = (req, res, next) => {
-  if (!req.query.userA)
+  if (!req.params.userA)
     return res.status(400).json({ message: "First user missing!" });
-  if (!req.query.userB)
+  if (!req.params.userB)
     return res.status(400).json({ message: "Second user missing!" });
   try {
-    const userA = req.query.userA;
-    const userB = req.query.userB;
+    const userA = req.params.userA;
+    const userB = req.params.userB;
     Message.findAll({
       where: {
         // We need to combine Op.or and Op.and to check for multiple clauses
