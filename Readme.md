@@ -20,7 +20,7 @@ The endpoints implemented are the following.
 | `POST` | `/message/clear`                  | Deletes all messages, not in the scope of the project, for development only                       |
 | `GET`  | `/user/`                          | Get user(s) based on query params (see message model)                                             |
 | `GET`  | `/user/get/message/:userA/:userB` | Gets messages between user A and B, ordered by the most recent one                                |
-| `GET`  | `/user/get/conversationList`      |                                                                                                   |
+| `GET`  | `/user/get/conversationList`      | Returns an array of users ids, with whom the requested user has exchanged messages                |
 
 - It is assumed that /message/create works only if called after /feedDB or without calling /feedDB at all. If /feedDB is called after a single message is
   created, a validation error occurs since there would be duplicate ids.
