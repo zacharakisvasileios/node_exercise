@@ -13,10 +13,6 @@ router.get(
 // not requested, used for development
 router.post("/message/clear", messageController.deleteAllMessages);
 
-router.get(
-  "/user/:id?/:firstName?/:surname?/:dateOfBirth?/:sex?/:username?",
-  userController.getUsers,
-);
 router.get("/user/messages/:userA?/:userB?", userController.getUserMessages);
 router.get("/user/conversationList", userController.getUserConversationList);
 // not requested, used for development
@@ -24,5 +20,8 @@ router.get(
   "/user/messagesList",
   userController.getUserConversationListMessages,
 );
-
+router.get(
+  "/user/:id?/:firstName?/:surname?/:dateOfBirth?/:sex?/:username?",
+  userController.getUsers,
+);
 module.exports = router;

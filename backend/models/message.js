@@ -1,5 +1,6 @@
 const Sequelize = require("sequelize");
 const db = require("../util/database");
+const User = require("./user");
 
 const Message = db.define("message", {
   id: {
@@ -15,6 +16,15 @@ const Message = db.define("message", {
   receiver: Sequelize.INTEGER,
   seen: Sequelize.BOOLEAN,
   timestampSent: Sequelize.STRING,
+});
+
+Message.belongsTo(User, {
+  foreignKey: "sender",
+  targetKey: "id",
+});
+Message.belongsTo(User, {
+  foreignKey: "receiver",
+  targetKey: "id",
 });
 
 module.exports = Message;
