@@ -2,14 +2,17 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import { Space, Table, Button, Empty, Result, message } from "antd";
 import UpdateMessage from "./modals/UpdateMessage";
+import CreateMessage from "./modals/CreateMessage";
+import { dateInYyyyMmDdHhMmSs } from "../util";
 
 const SERVER_URI = "http://localhost:8080";
 
 const ShowMessagesComponent = () => {
+  const [error, setError] = useState(false);
   const [messages, setMessages] = useState([]);
   const [currentMessage, setCurrentMessage] = useState(0);
-  const [isUpdateModalVisibleTrue, setUpdateModalVisibleTrue] = useState(false);
-  const [error, setError] = useState(false);
+  const [isUpdateModalVisible, setUpdateModalVisible] = useState(false);
+  const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
 
   useEffect(() => {
     getMessages();
@@ -56,7 +59,7 @@ const ShowMessagesComponent = () => {
       .then((res) => {
         if (res.status === 200) {
           setCurrentMessage(res.data[0]);
-          setUpdateModalVisibleTrue(true);
+          setUpdateModalVisible(true);
         } else {
           message.error("Fetching message information failed");
         }
@@ -67,7 +70,30 @@ const ShowMessagesComponent = () => {
       });
   };
 
-  const updateData = (id, formValues) => {
+  const createNewMessage = (formValues) => {
+    axios
+      .post(`${SERVER_URI}/message/create`, {
+        content: formValues.content,
+        sender: formValues.sender,
+        receiver: formValues.receiver,
+        seen: formValues.seen,
+        timestampSent: dateInYyyyMmDdHhMmSs(new Date()),
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          // close modal, show success message and refetch messages
+          setIsCreateModalVisible(false);
+          getMessages();
+          message.success("Message created successfully");
+        }
+      })
+      .catch((error) => {
+        setUpdateModalVisible(false);
+        message.error(error.message);
+      });
+  };
+
+  const updateMessage = (id, formValues) => {
     axios
       .put(`${SERVER_URI}/message/update/${id}`, {
         content: formValues.content,
@@ -78,13 +104,13 @@ const ShowMessagesComponent = () => {
       .then((res) => {
         if (res.status === 200) {
           // close modal, show success message and refetch messages
-          setUpdateModalVisibleTrue(false);
+          setUpdateModalVisible(false);
           getMessages();
           message.success("Message updated successfully");
         }
       })
       .catch((error) => {
-        setUpdateModalVisibleTrue(false);
+        setUpdateModalVisible(false);
         message.error(error.message);
       });
   };
@@ -152,6 +178,20 @@ const ShowMessagesComponent = () => {
             >
               Import messages now
             </Button>
+            <div>or</div>
+            <Button
+              type="primary"
+              onClick={() => {
+                setIsCreateModalVisible(true);
+              }}
+            >
+              Create a new message
+            </Button>
+            <CreateMessage
+              isCreateModalVisible={isCreateModalVisible}
+              setIsCreateModalVisible={setIsCreateModalVisible}
+              createNewMessage={createNewMessage}
+            />
           </Empty>
         </div>
       )}
@@ -165,10 +205,15 @@ const ShowMessagesComponent = () => {
             title={() => "Messages"}
           ></Table>
           <UpdateMessage
-            visible={isUpdateModalVisibleTrue}
-            setVisible={setUpdateModalVisibleTrue}
-            updateData={updateData}
+            visible={isUpdateModalVisible}
+            setVisible={setUpdateModalVisible}
+            updateMessage={updateMessage}
             editedMessage={currentMessage}
+          />
+          <CreateMessage
+            isCreateModalVisible={isCreateModalVisible}
+            setIsCreateModalVisible={setIsCreateModalVisible}
+            createNewMessage={createNewMessage}
           />
         </>
       )}
@@ -181,49 +226,6 @@ const ShowMessagesComponent = () => {
       )}
     </>
   );
-  /*return () => {
-    if (message.length === 0 && !error) {
-      return <div className="d-flex flex-column min-vh-100 justify-content-center align-items-center">
-        <Empty
-          image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-          imageStyle={{ height: 60 }}
-          description={<span>No messages found</span>}
-        >
-          <Button
-            type="primary"
-            onClick={() => {
-              feedFB();
-            }}
-          >
-            Import messages now
-          </Button>
-        </Empty>
-      </div>;
-    } else if (message.length !== 0 && !error) {
-      <>
-        <Table
-          rowKey={(messages) => messages.id}
-          dataSource={messages}
-          columns={columns}
-          bordered
-          title={() => "Messages"}
-        ></Table>
-        <UpdateMessage
-          visible={isUpdateModalVisibleTrue}
-          setVisible={setUpdateModalVisibleTrue}
-          updateData={updateData}
-          editedMessage={currentMessage}
-        />
-      </>;
-    } else {
-      <Result
-        status="500"
-        title="500"
-        subTitle="Sorry, something went wrong."
-        extra={<Button type="primary">Back Home</Button>}
-      />;
-    }
-  };*/
 };
 
 export default ShowMessagesComponent;

@@ -1,11 +1,15 @@
 import React from "react";
 import { Modal, Form, Input, Switch } from "antd";
 
-const UpdateMessage = ({ visible, setVisible, editedMessage, updateData }) => {
+const UpdateMessage = ({
+  visible,
+  setVisible,
+  updateMessage,
+  editedMessage,
+}) => {
   const [form] = Form.useForm();
   const onFinish = (formValues) => {
-    console.log(formValues);
-    updateData(editedMessage.id, formValues);
+    updateMessage(editedMessage.id, formValues);
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -76,7 +80,12 @@ const UpdateMessage = ({ visible, setVisible, editedMessage, updateData }) => {
             </Form.Item>
             <div className="d-flex justify-content-between mb-4">
               <span>Seen</span>
-              <Form.Item name="seen" label="Seen" noStyle>
+              <Form.Item
+                name="seen"
+                label="Seen"
+                noStyle
+                valuePropName="checked"
+              >
                 <Switch
                   checkedChildren="Yes"
                   unCheckedChildren="No"

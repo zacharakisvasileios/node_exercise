@@ -91,12 +91,12 @@ exports.getUserConversationList = (req, res, next) => {
       },
       // sender and receiver ids suffice for our needs
       attributes: ["sender", "receiver"],
-      include: [
+      /*include: [
         {
           model: User,
           attributes: ["username"],
         },
-      ],
+      ],*/
       // TODO should be ASC later on, since it is pushed to our array
       order: [["timestampSent", "DESC"]],
     })

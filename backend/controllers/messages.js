@@ -147,12 +147,12 @@ exports.getMessages = async (req, res) => {
     }
     const messages = await Message.findAll({
       where: searchStr,
-      include: [
+      /*include: [
         {
           model: User,
           attributes: ["username"],
         },
-      ],
+      ],*/
     });
     return res.status(200).json(messages);
   } catch (error) {
